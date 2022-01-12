@@ -4,13 +4,20 @@ import { Box, Button, Card, CardContent, Checkbox, Divider, FormControl, Link, P
 import Bubbles from './Bubbles'
 
 import Model from './Model'
+import { LoadingButton } from '@mui/lab'
 
 export default function Home() {
 
-    const [value, setValue] = useState('')
+    const [username, setUsername] = useState('')
+    const [roomCode, setRoomCode] = useState('')
+    const [isLoading, setLoading] = useState(false)
 
-    const handleChange = (e) => {
-        setValue(e.target.value)
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value)
+    }
+
+    const handleRoomCodeChange = (e) => {
+        setRoomCode(e.target.value)
     }
 
     return (
@@ -64,8 +71,8 @@ export default function Home() {
                             <TextField
                                 label='Username'
                                 placeholder='Enter a username'
-                                value={value}
-                                onChange={handleChange}
+                                value={username}
+                                onChange={handleUsernameChange}
                                 type='text'
                                 required
                                 InputProps={{
@@ -78,8 +85,8 @@ export default function Home() {
                             <TextField
                                 label='Room Code'
                                 placeholder='Enter room code'
-                                value={value}
-                                onChange={handleChange}
+                                value={roomCode}
+                                onChange={handleRoomCodeChange}
                                 type='text'
                                 required
                                 InputProps={{
@@ -92,30 +99,17 @@ export default function Home() {
                             <Stack
                                 spacing={1}
                             >
-                                <Stack
-                                    direction='row'
-                                    spacing={1}
-                                    alignItems='center'
-                                    justifyContent='center'
-                                >
-                                    <Lock htmlColor='#7C7C7C' fontSize='small' />
-                                    <Typography
-                                        variant='caption'
-                                        color='GrayText'
-                                        fontFamily='SFProText-Regular'
-                                    >
-                                        End-to-end encrypted
-                                    </Typography>
-                                </Stack>
-                                <Button
+                                <LoadingButton
                                     variant='contained'
-                                    startIcon={<Add />}
+                                    startIcon={<Lock />}
                                     fullWidth
                                     size='large'
-                                    disabled={value !== null}
+                                    loading={isLoading}
+                                    disabled={!username || !roomCode}
+                                    onClick={() => setLoading(true)}
                                 >
                                     Join room
-                                </Button>
+                                </LoadingButton>
                                 <Typography
                                     variant='body2'
                                     color='GrayText'
