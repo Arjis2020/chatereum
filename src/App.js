@@ -6,6 +6,7 @@ import Home from './components/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Bubbles from './components/Home/Bubbles';
 import Footer from './components/Footer';
+import RoutesHandler from './components/RoutesHandler';
 
 function App() {
   const theme = createTheme({
@@ -14,7 +15,8 @@ function App() {
         main: '#304fff',
         light: '#7B7CFF',
         dark: '#0026CA',
-        contrastText: '#FFF'
+        contrastText: '#FFF',
+        darker: '#020B34'
       },
       secondary: {
         light: '#FFF350',
@@ -38,10 +40,11 @@ function App() {
       <CssBaseline />
       <Container
         maxWidth='xl'
+        disableGutters
       >
-        <Home />
+        <RoutesHandler />
       </Container >
-      <Footer />
+      {/* <Footer /> */}
     </ThemeProvider>
   );
 }
