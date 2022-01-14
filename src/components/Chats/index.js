@@ -1,5 +1,5 @@
 import { Call, VideoCall } from '@mui/icons-material'
-import { Avatar, Box, Container, Divider, IconButton, Paper, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Card, Container, Divider, IconButton, Paper, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Footer from '../Footer'
 import ChatArea from './ChatArea'
@@ -32,7 +32,7 @@ export default function Chat({ noFooter }) {
                     display: {
                         xs: 'none',
                         md: 'inline-block'
-                    }
+                    },
                 }}
             >
                 <Container
@@ -45,8 +45,9 @@ export default function Chat({ noFooter }) {
                 >
                     <Stack
                         sx={{
-                            width: '100%'
-                        }}
+                            width: '100%',
+                            boxShadow: 4
+                        }}                        
                     >
                         <ChatHeader roomImg={room.roomImg} roomName={room.roomName} participants={room.participants} />
                         <Divider />
