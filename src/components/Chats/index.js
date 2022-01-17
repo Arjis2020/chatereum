@@ -1,182 +1,111 @@
 import { Call, VideoCall } from '@mui/icons-material'
 import { Avatar, Box, Card, Container, Divider, IconButton, Paper, Stack, Typography } from '@mui/material'
+import axios from 'axios'
+import Api from '../../api'
 import React, { useEffect, useState } from 'react'
 import Footer from '../Footer'
 import ChatArea from './ChatArea'
 import ChatHeader from './ChatHeader'
 import ChatMessage from './ChatMessage'
+import { useSearchParams } from 'react-router-dom'
+import Loader from '../Loader'
+import { v4 as uuidV4 } from 'uuid'
 
-export default function Chat({ noFooter }) {
-    const [room, setRoom] = useState({
-        roomId: 'HEX67890',
-        roomName: 'College Unofficial',
-        participants: 0,
-        roomImg: ''
-    })
-
-    const randomInRange = (min, max) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+export default function Chat({ noFooter, onJoinRoom }) {
+    const [room, setRoom] = useState(null)
+    const [searchParams, setSearchParams] = useSearchParams()
+    const [isLoading, setLoading] = useState(true)
+    const [messages, setMessages] = useState([])
 
     useEffect(() => {
-        if (!room.roomImg)
-            setRoom({ ...room, roomImg: `https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/female/${randomInRange(0, 100)}.png` })
+        async function getRoomDetails() {
+            try {
+                var response = await axios.get(`${Api.ROOM_DETAILS}?room_code=${searchParams.get('room_code')}`)
+                const { room } = response.data
+                setRoom({
+                    room_code: room.room_code,
+                    participants: 0,
+                    room_avatar: room.room_avatar,
+                    room_name: room.room_name
+                })
+                onJoinRoom({
+                    room_code: room.room_code,
+                    username: searchParams.get('username'),
+                    onSuccess: ({ message, sender }) => {
+                        setMessages(oldMessages => [...oldMessages, {
+                            id: uuidV4(),
+                            msg: message,
+                            sender
+                        }])
+                    }
+                })
+                setLoading(false)
+            }
+            catch (err) {
+                console.log(err.toString())
+            }
+        }
+        getRoomDetails()
     }, [])
 
     return (
-        <>
-            <Box
-                sx={{
-                    display: {
-                        xs: 'none',
-                        md: 'inline-block'
-                    },
-                }}
-            >
-                <Container
-                    maxWidth='xl'
+        isLoading ?
+            <Loader />
+            :
+            <>
+                <Box
                     sx={{
-                        display: 'flex',
-                        height: '100vh',
-                        width: '100vw',
+                        display: {
+                            xs: 'none',
+                            md: 'inline-block'
+                        },
                     }}
                 >
-                    <Stack
+                    <Container
+                        maxWidth='xl'
                         sx={{
-                            width: '100%',
-                            boxShadow: 4
-                        }}                        
+                            display: 'flex',
+                            height: '100vh',
+                            width: '100vw',
+                        }}
                     >
-                        <ChatHeader roomImg={room.roomImg} roomName={room.roomName} participants={room.participants} />
-                        <Divider />
-                        <ChatArea messages={[
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Binit',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                        ]} />
-                        <ChatMessage />
-                    </Stack>
-                </Container>
-            </Box>
-            <Box
-                sx={{
-                    display: {
-                        xs: 'flex',
-                        md: 'none'
-                    }
-                }}
-            >
-                <Container
+                        <Stack
+                            sx={{
+                                width: '100%',
+                                boxShadow: 4
+                            }}
+                        >
+                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.participants} />
+                            <Divider />
+                            <ChatArea messages={messages} />
+                            <ChatMessage />
+                        </Stack>
+                    </Container>
+                </Box>
+                <Box
                     sx={{
-                        display: 'flex',
-                        height: '100vh',
+                        display: {
+                            xs: 'flex',
+                            md: 'none'
+                        }
                     }}
-                    disableGutters
                 >
-                    <Stack>
-                        <ChatHeader roomImg={room.roomImg} roomName={room.roomName} participants={room.participants} />
-                        <Divider />
-                        <ChatArea messages={[
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                            {
-                                sender: 'Arjis',
-                                msg: 'Hello',
-                                id: Math.random()
-                            },
-                        ]} />
-                        <ChatMessage />
-                    </Stack>
-                </Container>
-            </Box>
-            {!noFooter && <Footer />}
-        </>
+                    <Container
+                        sx={{
+                            display: 'flex',
+                            height: '100vh',
+                        }}
+                        disableGutters
+                    >
+                        <Stack>
+                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.participants} />
+                            <Divider />
+                            <ChatArea messages={messages} />
+                            <ChatMessage />
+                        </Stack>
+                    </Container>
+                </Box>
+                {!noFooter && <Footer />}
+            </>
     )
 }

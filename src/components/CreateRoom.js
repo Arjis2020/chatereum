@@ -1,17 +1,29 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { Add, Chat, CopyAll, Lock, Person, Share } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, Checkbox, Divider, FormControl, IconButton, Link, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, Checkbox, Divider, FormControl, IconButton, Link, Paper, Stack, TextField, Typography, Skeleton } from '@mui/material'
 
 import Model from './Home/Model'
 import { LoadingButton } from '@mui/lab'
 import Bubbles from './Home/Bubbles'
 import Footer from './Footer'
 
-export default function CreateRoom({ noFooter }) {
+import { generateAvatarUrl, generateRoomCode } from '../utils'
+import { useNavigate } from 'react-router-dom'
 
+export default function CreateRoom({ noFooter, onCreateRoom }) {
     const [username, setUsername] = useState('')
     const [roomName, setRoomName] = useState('')
     const [isLoading, setLoading] = useState(false)
+    const [room, setRoom] = useState(null)
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        setRoom({
+            roomCode: generateRoomCode(),
+            roomAvatar: generateAvatarUrl()
+        })
+    }, [])
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value)
@@ -19,6 +31,19 @@ export default function CreateRoom({ noFooter }) {
 
     const handleRoomNameChange = (e) => {
         setRoomName(e.target.value)
+    }
+
+    const joinRoom = () => {
+        setLoading(true)
+        onCreateRoom({
+            room_code: room.roomCode,
+            room_name: roomName,
+            username,
+            room_avatar: room.roomAvatar,
+            onSuccess: (payload) => {
+                navigate(payload.navigate)
+            }
+        })
     }
 
     return (
@@ -123,49 +148,55 @@ export default function CreateRoom({ noFooter }) {
                                 >
                                     Your room code
                                 </Typography>
-                                <Paper
-                                    className='p-2 px-3'
-                                    sx={{
-                                        background: '#7B7CFF25',
-                                        boxShadow: 'none',
-                                        cursor: 'text'
-                                    }}
-                                    onClick={() => {
-                                        /**
-                                         * @TODO
-                                         * show snackbar and also copy room code
-                                         */
-                                    }}
-                                >
-                                    <Stack
-                                        direction='row'
-                                        justifyContent='space-between'
-                                        alignItems='center'
-                                    >
-                                        <Typography
-                                            letterSpacing={10}
-                                            variant='h6'
-                                            fontFamily='SFProText-Bold'
+                                {
+                                    room?.roomCode ?
+                                        <Paper
+                                            className='p-2 px-3'
+                                            sx={{
+                                                background: '#7B7CFF25',
+                                                boxShadow: 'none',
+                                                cursor: 'text'
+                                            }}
+                                            onClick={() => {
+                                                /**
+                                                 * @TODO
+                                                 * show snackbar and also copy room code
+                                                 */
+                                            }}
                                         >
-                                            KIWI60
-                                        </Typography>
-                                        <Stack
-                                            direction='row'
-                                            spacing={1}
-                                        >
-                                            <IconButton
-                                                onClick={() => console.log("Copied")}
+                                            <Stack
+                                                direction='row'
+                                                justifyContent='space-between'
+                                                alignItems='center'
                                             >
-                                                <Share color='primary' />
-                                            </IconButton>
-                                            <IconButton
-                                                onClick={() => console.log("Copied")}
-                                            >
-                                                <CopyAll color='primary' />
-                                            </IconButton>
-                                        </Stack>
-                                    </Stack>
-                                </Paper>
+
+                                                <Typography
+                                                    letterSpacing={10}
+                                                    variant='h6'
+                                                    fontFamily='SFProText-Bold'
+                                                >
+                                                    {room?.roomCode}
+                                                </Typography>
+                                                <Stack
+                                                    direction='row'
+                                                    spacing={1}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => console.log("Copied")}
+                                                    >
+                                                        <Share color='primary' />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        onClick={() => console.log("Copied")}
+                                                    >
+                                                        <CopyAll color='primary' />
+                                                    </IconButton>
+                                                </Stack>
+                                            </Stack>
+                                        </Paper>
+                                        :
+                                        <Skeleton variant='text' width='100%' height={40} animation='wave' />
+                                }
                             </Stack>
                             <Stack
                                 spacing={1}
@@ -177,7 +208,7 @@ export default function CreateRoom({ noFooter }) {
                                     size='large'
                                     loading={isLoading}
                                     disabled={!username || !roomName}
-                                    onClick={() => setLoading(true)}
+                                    onClick={joinRoom}
                                 >
                                     Create room
                                 </LoadingButton>
@@ -208,6 +239,6 @@ export default function CreateRoom({ noFooter }) {
                 </Typography>
             </Stack>
             {!noFooter && <Footer />}
-        </Box>
+        </Box >
     )
 }

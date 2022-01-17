@@ -2,6 +2,7 @@ import { Lock } from '@mui/icons-material'
 import { Box, Card, CardContent, Chip, Divider, Paper, Stack, TextField, Typography } from '@mui/material'
 import React from 'react'
 import ChatBubble from './ChatBubble'
+import ServerMessage from './ServerMessage'
 
 export default function ChatArea({ messages }) {
     return (
@@ -15,7 +16,7 @@ export default function ChatArea({ messages }) {
             <Box
                 className='mb-2'
                 sx={{
-                    height: '100%',
+                    height: '100vh',
                     width: '100%',
                 }}
             >
@@ -56,13 +57,20 @@ export default function ChatArea({ messages }) {
                         alignItems='start'
                     >
                         {messages && messages.map((message, index) => (
-                            <ChatBubble
-                                key={message.id}
-                                sender={message.sender}
-                                message={message.msg}
-                                timestamp={new Date()}
-                                className={message.sender !== messages[index + 1]?.sender}
-                            />
+                            message.sender && message.sender === 'Server' ?
+                                <ServerMessage
+                                    key={message.id}
+                                    message={message.msg}
+                                />
+                                :
+                                message.sender &&
+                                <ChatBubble
+                                    key={message.id}
+                                    sender={message.sender}
+                                    message={message.msg}
+                                    timestamp={new Date()}
+                                    className={message.sender !== messages[index + 1]?.sender}
+                                />
                         ))}
                     </Stack>
                 </Stack>

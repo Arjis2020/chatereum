@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import './chatbubble.css'
 
 export default function ChatBubble({ sender, message, timestamp, className }) {
-    const [img, setImg] = useState('')
+    //const [img, setImg] = useState('')
 
     const randomInRange = (min, max) => {
         min = Math.ceil(min);
@@ -12,10 +12,10 @@ export default function ChatBubble({ sender, message, timestamp, className }) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (!img)
             setImg(`https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/female/${randomInRange(0, 100)}.png`)
-    }, [])
+    }, []) */
 
     const randomMsg = () => {
         const lorem = 'Voluptate nisi minim officia Lorem. Velit occaecat ipsum enim irure velit magna dolore ullamco non aute. Nulla nulla deserunt ex fugiat ullamco ad. Ea Lorem duis excepteur irure minim pariatur occaecat sunt deserunt mollit qui qui dolore aliqua. Excepteur eu eu id est ut commodo do qui sunt tempor nostrud id labore eu. Irure aute eiusmod non nisi veniam occaecat laborum fugiat est dolore aute. Ex aute incididunt velit laboris non exercitation nulla nisi ut dolor.'
@@ -35,9 +35,9 @@ export default function ChatBubble({ sender, message, timestamp, className }) {
                         spacing={1}
                         alignItems='center'
                     >
-                        <Avatar
+                        {/* <Avatar
                             src={img}
-                        />
+                        /> */}
                         <Typography>
                             {sender}
                         </Typography>

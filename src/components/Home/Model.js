@@ -3,6 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Html } from '@react-three/drei'
 import { CircularProgress, Box } from '@mui/material'
+import Loader from '../Loader'
 
 const SENSITIVITY = 0.003 / 3
 
@@ -47,23 +48,21 @@ export default function Model() {
         )
     }
 
-    const Loader = () => (
+    const LoadingComponent = () => (
         <Html
             style={{
-                display: 'flex',
+                /* display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'center', */
                 position: 'absolute',
                 top: 0,
                 bottom: 0,
                 right: 0,
                 left: 0,
-                zIndex: 1,
+                zIndex: 99999,
             }}
         >
-            <Box>
-                <CircularProgress variant='indeterminate' color='primary' size={40} />
-            </Box>
+            <Loader />
         </Html>
     )
 
@@ -75,7 +74,7 @@ export default function Model() {
         >
             <directionalLight position={[0, 6, 0]} intensity={8} color='#304fff' />
             <pointLight position={[-5, 0, 0]} intensity={3} color='#FFFCEF' />
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={<LoadingComponent />}>
                 <Mesh />
             </Suspense>
         </Canvas>
