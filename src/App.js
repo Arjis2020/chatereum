@@ -30,7 +30,7 @@ function App() {
     }
     if (!token)
       getToken()
-  }, [])
+  }, [token])
 
   const onCreateRoom = async ({ room_code, room_name, username, room_avatar, onSuccess }) => {
     try {
@@ -51,7 +51,22 @@ function App() {
     }
   }
 
-  const onJoinRoom = ({ room_code, username, onSuccess }) => {
+  const onJoinRoom = async ({ room_code, username, onSuccess }) => {
+    try {
+      var response = await axios.get(`${Api.ROOM_DETAILS}?room_code=${room_code}`)
+      if (response.data.status === 'success') {
+        const { room } = response.data
+        onSuccess({
+          navigate: `/chat?room_code=${room.room_code}&username=${username}`
+        })
+      }
+    }
+    catch (err) {
+      console.log(err.toString())
+    }
+  }
+
+  const onChatJoined = ({ room_code, username, public_key, onSuccess }) => {
     Socket.init(process.env.REACT_APP_HOST, {
       forceNew: false,
       query: {
@@ -60,13 +75,16 @@ function App() {
     }, () => {
       Socket.emit('join-room', {
         room_code,
-        username
+        username,
+        public_key
       }, (heartbeat) => {
         if (heartbeat.status === 'success') {
           onSuccess({
             sender: 'Server',
-            message: 'You joined the room'
+            message: 'You joined the room',
+            participants: heartbeat.participants
           })
+          //localStorage.setItem('chat-room', room_code)
         }
         else {
           /**
@@ -75,16 +93,18 @@ function App() {
            */
         }
       })
-      Socket.listen('room-joined', (data) => {
+      Socket.listen('room-joined', ({ username, participants }) => {
         onSuccess({
           sender: 'Server',
-          message: `${data.username} joined the room`
+          message: `${username} joined the room`,
+          participants
         })
       })
-      Socket.listen('user-disconnected', (username) => {
+      Socket.listen('user-disconnected', ({ username, participants }) => {
         onSuccess({
           sender: 'Server',
-          message: `${username} left the room`
+          message: `${username} left the room`,
+          participants
         })
       })
     })
@@ -141,6 +161,7 @@ function App() {
             >
               <RoutesHandler
                 onCreateRoom={onCreateRoom}
+                onChatJoined={onChatJoined}
                 onJoinRoom={onJoinRoom}
               />
             </motion.div>

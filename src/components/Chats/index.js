@@ -10,8 +10,9 @@ import ChatMessage from './ChatMessage'
 import { useSearchParams } from 'react-router-dom'
 import Loader from '../Loader'
 import { v4 as uuidV4 } from 'uuid'
+import Encryption from '../../encryption'
 
-export default function Chat({ noFooter, onJoinRoom }) {
+export default function Chat({ noFooter, onChatJoined }) {
     const [room, setRoom] = useState(null)
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setLoading] = useState(true)
@@ -28,15 +29,27 @@ export default function Chat({ noFooter, onJoinRoom }) {
                     room_avatar: room.room_avatar,
                     room_name: room.room_name
                 })
-                onJoinRoom({
+                const keys = await Encryption.getKeys()
+                console.log("KEYS", keys)
+                const encoded = await Encryption.encrypt(keys.public_key, "Hello World")
+                console.log("ENCRYPTED", encoded)
+                const decrypted = await Encryption.decrypt(keys.private_key, encoded)
+                console.log("DECRYPTED", decrypted)
+                sessionStorage.setItem('private_key', keys.private_key)
+                onChatJoined({
                     room_code: room.room_code,
                     username: searchParams.get('username'),
-                    onSuccess: ({ message, sender }) => {
+                    public_key: keys.public_key,
+                    onSuccess: ({ message, sender, participants }) => {
                         setMessages(oldMessages => [...oldMessages, {
                             id: uuidV4(),
                             msg: message,
                             sender
                         }])
+                        setRoom(oldRoom => ({
+                            ...oldRoom,
+                            participants
+                        }))
                     }
                 })
                 setLoading(false)

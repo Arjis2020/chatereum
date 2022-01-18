@@ -1,17 +1,20 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { Add, Chat, Lock, Person } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, Checkbox, Divider, FormControl, Link, Paper, Stack, TextField, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { Chat, Lock, Person } from '@mui/icons-material'
+import { Box, Card, CardContent, Link, Stack, TextField, Typography } from '@mui/material'
 import Bubbles from './Bubbles'
 
 import Model from './Model'
 import { LoadingButton } from '@mui/lab'
 import Footer from '../Footer'
+import { useNavigate } from 'react-router-dom'
 
-export default function Home({ noFooter }) {
+export default function Home({ noFooter, onJoinRoom }) {
 
     const [username, setUsername] = useState('')
     const [roomCode, setRoomCode] = useState('')
     const [isLoading, setLoading] = useState(false)
+
+    const navigate = useNavigate()
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value)
@@ -19,6 +22,17 @@ export default function Home({ noFooter }) {
 
     const handleRoomCodeChange = (e) => {
         setRoomCode(e.target.value)
+    }
+
+    const onJoinClicked = () => {
+        setLoading(true)
+        onJoinRoom({
+            room_code: roomCode,
+            username,
+            onSuccess: (data) => {
+                navigate(data.navigate)
+            }
+        })
     }
 
     return (
@@ -130,7 +144,7 @@ export default function Home({ noFooter }) {
                                     size='large'
                                     loading={isLoading}
                                     disabled={!username || !roomCode}
-                                    onClick={() => setLoading(true)}
+                                    onClick={onJoinClicked}
                                 >
                                     Join room
                                 </LoadingButton>
