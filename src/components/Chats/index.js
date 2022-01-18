@@ -30,11 +30,14 @@ export default function Chat({ noFooter, onChatJoined }) {
                     room_name: room.room_name
                 })
                 const keys = await Encryption.getKeys()
-                console.log("KEYS", keys)
-                const encoded = await Encryption.encrypt(keys.public_key, "Hello World")
-                console.log("ENCRYPTED", encoded)
-                const decrypted = await Encryption.decrypt(keys.private_key, encoded)
-                console.log("DECRYPTED", decrypted)
+                console.log("AES ", keys.aes_key)
+                console.log("PUBLIC ", keys.public_key)
+                console.log("PRIVATE ", keys.private_key)
+                const encrypted = await Encryption.encrypt(keys.aes_key, keys.public_key, "Bhai kaam kr rha hai")
+                //this encrypted object will be the payload for individual users
+                console.log("ENCRYPTED ", encrypted)
+                const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, keys.private_key, encrypted.cipher_text)
+                console.log("DECRYPTED ", decrypted)
                 sessionStorage.setItem('private_key', keys.private_key)
                 onChatJoined({
                     room_code: room.room_code,

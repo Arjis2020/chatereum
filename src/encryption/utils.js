@@ -1,31 +1,5 @@
+import Config from './config.json'
 let crypto = window.crypto.subtle
-
-function getKeys() {
-    return new Promise(async (resolve, reject) => {
-        try {
-            var key = await crypto.generateKey({
-                name: "RSA-OAEP",
-                modulusLength: 4096,
-                publicExponent: new Uint8Array([1, 0, 1]),
-                hash: "SHA-256"
-            },
-                true,
-                ["encrypt", "decrypt"]
-            )
-
-            const spki_public_key = await crypto.exportKey('spki', key.publicKey)
-            const pkcs8_private_key = await crypto.exportKey('pkcs8', key.privateKey)
-
-            resolve({
-                public_key: arrayBufferToBase64(spki_public_key),
-                private_key: toPem(pkcs8_private_key)
-            })
-        }
-        catch (err) {
-            reject(err)
-        }
-    })
-}
 
 function arrayBufferToBase64(arrayBuffer) {
     var byteArray = new Uint8Array(arrayBuffer);
@@ -57,9 +31,16 @@ function addNewLines(str) {
     return finalString;
 }
 
-function toPem(privateKey) {
+function toPrivatePem(privateKey) {
     var b64 = addNewLines(arrayBufferToBase64(privateKey));
     var pem = "-----BEGIN PRIVATE KEY-----\n" + b64 + "-----END PRIVATE KEY-----";
+
+    return pem;
+}
+
+function toPublicPem(publicKey) {
+    var b64 = addNewLines(arrayBufferToBase64(publicKey));
+    var pem = "-----BEGIN PUBLIC KEY-----\n" + b64 + "-----END PUBLIC KEY-----";
 
     return pem;
 }
@@ -72,14 +53,18 @@ function encodeMessage(plainText = "") {
 function getPublicCryptoKey(public_key) {
     return new Promise(async (resolve, reject) => {
         try {
-            const binaryDerString = window.atob(public_key);
+            const pemHeader = "-----BEGIN PUBLIC KEY-----";
+            const pemFooter = "-----END PUBLIC KEY-----";
+            const pemContents = public_key.substring(pemHeader.length, public_key.length - pemFooter.length);
+            const binaryDerString = window.atob(pemContents);
             const spki = base64ToArrayBuffer(binaryDerString);
+
             let crypto_key = await crypto.importKey(
-                "spki",
+                Config.main.exports.public,
                 spki,
                 {
-                    name: "RSA-OAEP",
-                    hash: "SHA-256"
+                    name: Config.main.name,
+                    hash: Config.main.hash
                 },
                 true,
                 ["encrypt"]
@@ -102,11 +87,11 @@ function getPrivateCryptoKey(private_key) {
             const pkcs8 = base64ToArrayBuffer(binaryDerString);
 
             let crypto_key = await crypto.importKey(
-                "pkcs8",
+                Config.main.exports.private,
                 pkcs8,
                 {
-                    name: "RSA-OAEP",
-                    hash: "SHA-256"
+                    name: Config.main.name,
+                    hash: Config.main.hash
                 },
                 true,
                 ["decrypt"]
@@ -119,20 +104,22 @@ function getPrivateCryptoKey(private_key) {
     })
 }
 
-
-function encrypt(public_key, plainText = "") {
+function getAESCryptoKey(aes_key) {
     return new Promise(async (resolve, reject) => {
         try {
-            let crypto_key = await getPublicCryptoKey(public_key)
-            let encoded_text = encodeMessage(plainText)
-            let encrypted = await crypto.encrypt(
+            const raw = base64ToArrayBuffer(window.atob(aes_key))
+
+            let aes_crypto_key = await crypto.importKey(
+                Config.pre.exports,
+                raw,
                 {
-                    name: "RSA-OAEP"
+                    name: Config.pre.name
                 },
-                crypto_key,
-                encoded_text
+                true,
+                ["encrypt", "decrypt"]
             )
-            resolve(encrypted)
+
+            resolve(aes_crypto_key)
         }
         catch (err) {
             reject(err)
@@ -140,26 +127,12 @@ function encrypt(public_key, plainText = "") {
     })
 }
 
-function decrypt(private_key, encrypted_text) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let crypto_key = await getPrivateCryptoKey(private_key)
-            let dec = new TextDecoder()
-            //encrypted_text = base64ToArrayBuffer(encrypted_text)
-            let decrypted = await crypto.decrypt(
-                {
-                    name: "RSA-OAEP"
-                },
-                crypto_key,
-                encrypted_text
-            )
-            console.log("DECRYPTED", decrypted)
-            resolve(dec.decode(decrypted))
-        }
-        catch (err) {
-            reject(err)
-        }
-    })
+function uIntToBase64(u8) {
+    return window.btoa(String.fromCharCode.apply(null, u8));
 }
 
-export default { getKeys, encrypt, decrypt }
+function base64ToUint8(str) {
+    return new Uint8Array(window.atob(str).split('').map(function (c) { return c.charCodeAt(0); }));
+}
+
+export { arrayBufferToBase64, base64ToArrayBuffer, encodeMessage, toPrivatePem, toPublicPem, getPublicCryptoKey, getPrivateCryptoKey, getAESCryptoKey, uIntToBase64, base64ToUint8 }
