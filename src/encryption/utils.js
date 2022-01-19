@@ -135,4 +135,15 @@ function base64ToUint8(str) {
     return new Uint8Array(window.atob(str).split('').map(function (c) { return c.charCodeAt(0); }));
 }
 
-export { arrayBufferToBase64, base64ToArrayBuffer, encodeMessage, toPrivatePem, toPublicPem, getPublicCryptoKey, getPrivateCryptoKey, getAESCryptoKey, uIntToBase64, base64ToUint8 }
+export {
+    arrayBufferToBase64,
+    base64ToArrayBuffer,
+    encodeMessage,
+    toPrivatePem,
+    toPublicPem,
+    getPublicCryptoKey,
+    getPrivateCryptoKey,
+    getAESCryptoKey,
+    uIntToBase64,
+    base64ToUint8
+}

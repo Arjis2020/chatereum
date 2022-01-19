@@ -5,8 +5,8 @@ let socket
 
 function init(url, options, onConnect) {
     socket = io(url, options)
-    socket.on('connect', (data) => {
-        onConnect(data)
+    socket.on('connect', () => {
+        onConnect(socket)
     })
 }
 

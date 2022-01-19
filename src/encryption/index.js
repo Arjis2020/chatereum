@@ -30,6 +30,37 @@ function getKeys() {
             const spki_public_key = await crypto.exportKey(Config.main.exports.public, RSA_KEY.publicKey)
             const pkcs8_private_key = await crypto.exportKey(Config.main.exports.private, RSA_KEY.privateKey)
 
+            /* var AES_KEY = await crypto.generateKey(
+                {
+                    name: Config.pre.name,
+                    length: Config.pre.length
+                },
+                true,
+                ["encrypt", "decrypt"]
+            )
+
+            const raw_aes_key = await crypto.exportKey(Config.pre.exports, AES_KEY) */
+
+            resolve({
+                public_key: toPublicPem(spki_public_key),
+                private_key: toPrivatePem(pkcs8_private_key),
+                //aes_key: arrayBufferToBase64(raw_aes_key)
+            })
+        }
+        catch (err) {
+            reject(err)
+        }
+    })
+}
+
+function encrypt(public_key, plainText = "") {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let rsa_crypto_key = await getPublicCryptoKey(public_key)
+            //let aes_crypto_key = await getAESCryptoKey(aes_key)
+
+            let encoded_text = encodeMessage(plainText)
+
             var AES_KEY = await crypto.generateKey(
                 {
                     name: Config.pre.name,
@@ -39,36 +70,17 @@ function getKeys() {
                 ["encrypt", "decrypt"]
             )
 
-            const raw_aes_key = await crypto.exportKey(Config.pre.exports, AES_KEY)
+            const raw_aes_key = arrayBufferToBase64(await crypto.exportKey(Config.pre.exports, AES_KEY))
 
-            resolve({
-                public_key: toPublicPem(spki_public_key),
-                private_key: toPrivatePem(pkcs8_private_key),
-                aes_key: arrayBufferToBase64(raw_aes_key)
-            })
-        }
-        catch (err) {
-            reject(err)
-        }
-    })
-}
+            let encoded_aes = encodeMessage(raw_aes_key)
 
-function encrypt(aes_key, public_key, plainText = "") {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let rsa_crypto_key = await getPublicCryptoKey(public_key)
-            let aes_crypto_key = await getAESCryptoKey(aes_key)
-
-            let encoded_text = encodeMessage(plainText)
-            let encoded_aes = encodeMessage(aes_key)
-           
             let iv = window.crypto.getRandomValues(new Uint8Array(16));
             let aes_encrypted = await crypto.encrypt(
                 {
                     name: Config.pre.name,
                     iv
                 },
-                aes_crypto_key,
+                AES_KEY,
                 encoded_text
             )
 

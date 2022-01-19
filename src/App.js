@@ -8,7 +8,7 @@ import Api from './api'
 import Loader from './components/Loader';
 import { AnimatePresence, motion } from 'framer-motion';
 import Socket from './socket'
-//require('dotenv').config()
+import Encryption from './encryption'
 
 function App() {
   const [token, setToken] = useState(null)
@@ -72,7 +72,7 @@ function App() {
       query: {
         auth: token
       }
-    }, () => {
+    }, (socket) => {
       Socket.emit('join-room', {
         room_code,
         username,
@@ -82,7 +82,8 @@ function App() {
           onSuccess({
             sender: 'Server',
             message: 'You joined the room',
-            participants: heartbeat.participants
+            participants: heartbeat.participants.filter(item => item.socket_id !== socket.id),
+            size: heartbeat.size
           })
           //localStorage.setItem('chat-room', room_code)
         }
@@ -93,20 +94,70 @@ function App() {
            */
         }
       })
-      Socket.listen('room-joined', ({ username, participants }) => {
+      Socket.listen('room-joined', ({ username, participants, size }) => {
         onSuccess({
           sender: 'Server',
           message: `${username} joined the room`,
-          participants
+          participants: participants.filter(item => item.socket_id !== socket.id),
+          size
         })
       })
-      Socket.listen('user-disconnected', ({ username, participants }) => {
+      Socket.listen('user-disconnected', ({ username, participants, size }) => {
         onSuccess({
           sender: 'Server',
           message: `${username} left the room`,
-          participants
+          participants: participants.filter(item => item.socket_id !== socket.id),
+          size
         })
       })
+    })
+  }
+
+  const onSendMessage = async (message, participants) => {
+    for await (const { socket_id, public_key } of participants) {
+      const encrypted = await Encryption.encrypt(public_key, message)
+      //this encrypted object will be the payload for individual users
+      console.log("ENCRYPTED ", encrypted)
+      Socket.emit('private-message', {
+        to: socket_id,
+        encrypted
+      })
+      /* const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, keys.private_key, encrypted.cipher_text)
+      console.log("DECRYPTED ", decrypted) */
+    }
+  }
+
+  const onMessageReceived = ({ callback }) => {
+    Socket.listen('new-private-message', async ({ encrypted, from, timestamp }) => {
+      const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, sessionStorage.getItem('private_key'), encrypted.cipher_text)
+      console.log("DECRYPTED ", decrypted)
+      callback({
+        sender: from,
+        message: decrypted,
+        timestamp
+      })
+    })
+  }
+
+  const onTyping = (room_code) => {
+    Socket.emit('typing', { room_code })
+  }
+
+  const onDismissTyping = (room_code) => {
+    Socket.emit('dismiss-typing', { room_code })
+  }
+
+  const onUserTyping = ({ callback }) => {
+    Socket.listen('user-typing', ({ username }) => {
+      callback({
+        username
+      })
+    })
+  }
+
+  const onUserDismissTyping = ({ callback }) => {
+    Socket.listen('user-dismiss-typing', () => {
+      callback()
     })
   }
 
@@ -123,6 +174,7 @@ function App() {
         light: '#FFF350',
         main: '#FFC107',
         dark: '#C79100',
+        glow: '#FFFB00',
         contrastText: '#000000'
       },
       background: {
@@ -163,6 +215,12 @@ function App() {
                 onCreateRoom={onCreateRoom}
                 onChatJoined={onChatJoined}
                 onJoinRoom={onJoinRoom}
+                onSendMessage={onSendMessage}
+                onMessageReceived={onMessageReceived}
+                onTyping={onTyping}
+                onUserTyping={onUserTyping}
+                onDismissTyping={onDismissTyping}
+                onUserDismissTyping={onUserDismissTyping}
               />
             </motion.div>
           </Container >

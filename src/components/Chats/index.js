@@ -12,11 +12,22 @@ import Loader from '../Loader'
 import { v4 as uuidV4 } from 'uuid'
 import Encryption from '../../encryption'
 
-export default function Chat({ noFooter, onChatJoined }) {
+export default function Chat({ noFooter, onChatJoined, onSendMessage, onMessageReceived, onTyping, onUserTyping, onDismissTyping, onUserDismissTyping }) {
     const [room, setRoom] = useState(null)
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setLoading] = useState(true)
     const [messages, setMessages] = useState([])
+    const [typing, setTyping] = useState(null)
+
+    const sendMessage = (message) => {
+        setMessages(oldMessages => [...oldMessages, {
+            id: uuidV4(),
+            sender: 'You',
+            msg: message,
+            timestamp: new Date().getTime()
+        }])
+        onSendMessage(message, room.participants)
+    }
 
     useEffect(() => {
         async function getRoomDetails() {
@@ -25,34 +36,50 @@ export default function Chat({ noFooter, onChatJoined }) {
                 const { room } = response.data
                 setRoom({
                     room_code: room.room_code,
-                    participants: 0,
+                    size: 0,
+                    participants: [],
                     room_avatar: room.room_avatar,
                     room_name: room.room_name
                 })
                 const keys = await Encryption.getKeys()
-                console.log("AES ", keys.aes_key)
-                console.log("PUBLIC ", keys.public_key)
-                console.log("PRIVATE ", keys.private_key)
-                const encrypted = await Encryption.encrypt(keys.aes_key, keys.public_key, "Bhai kaam kr rha hai")
-                //this encrypted object will be the payload for individual users
-                console.log("ENCRYPTED ", encrypted)
-                const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, keys.private_key, encrypted.cipher_text)
-                console.log("DECRYPTED ", decrypted)
                 sessionStorage.setItem('private_key', keys.private_key)
                 onChatJoined({
                     room_code: room.room_code,
                     username: searchParams.get('username'),
                     public_key: keys.public_key,
-                    onSuccess: ({ message, sender, participants }) => {
+                    onSuccess: ({ message, sender, participants, size }) => {
+                        console.log("PARTICIPANTS : ", participants)
                         setMessages(oldMessages => [...oldMessages, {
                             id: uuidV4(),
                             msg: message,
-                            sender
+                            sender,
+                            timestamp: new Date().getTime()
                         }])
                         setRoom(oldRoom => ({
                             ...oldRoom,
+                            size,
                             participants
                         }))
+                    }
+                })
+                onMessageReceived({
+                    callback: ({ message, sender, timestamp }) => {
+                        setMessages(oldMessages => [...oldMessages, {
+                            id: uuidV4(),
+                            msg: message,
+                            sender,
+                            timestamp
+                        }])
+                    }
+                })
+                onUserTyping({
+                    callback: ({ username }) => {
+                        setTyping(username)
+                    }
+                })
+                onUserDismissTyping({
+                    callback: () => {
+                        setTyping(null)
                     }
                 })
                 setLoading(false)
@@ -91,10 +118,17 @@ export default function Chat({ noFooter, onChatJoined }) {
                                 boxShadow: 4
                             }}
                         >
-                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.participants} />
+                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.size} />
                             <Divider />
-                            <ChatArea messages={messages} />
-                            <ChatMessage />
+                            <ChatArea
+                                messages={messages}
+                                typing={typing}
+                            />
+                            <ChatMessage
+                                onSendMessage={sendMessage}
+                                onTyping={() => onTyping(room.room_code)}
+                                onDismissTyping={() => onDismissTyping(room.room_code)}
+                            />
                         </Stack>
                     </Container>
                 </Box>
@@ -114,10 +148,17 @@ export default function Chat({ noFooter, onChatJoined }) {
                         disableGutters
                     >
                         <Stack>
-                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.participants} />
+                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.size} />
                             <Divider />
-                            <ChatArea messages={messages} />
-                            <ChatMessage />
+                            <ChatArea
+                                messages={messages}
+                                typing={typing}
+                            />
+                            <ChatMessage
+                                onSendMessage={sendMessage}
+                                onTyping={() => onTyping(room.room_code)}
+                                onDismissTyping={() => onDismissTyping(room.room_code)}
+                            />
                         </Stack>
                     </Container>
                 </Box>

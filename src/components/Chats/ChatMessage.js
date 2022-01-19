@@ -1,9 +1,11 @@
 import { Send } from '@mui/icons-material'
 import { Avatar, Box, Button, Divider, FilledInput, IconButton, Stack, TextField } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@mui/styles'
 
-export default function ChatMessage() {
+export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }) {
+
+    const [message, setMessage] = useState('')
 
     const useStyles = makeStyles((theme) => ({
         message: {
@@ -22,6 +24,20 @@ export default function ChatMessage() {
 
     const classes = useStyles()
 
+    const handleChange = (e) => {
+        if (e.target.value)
+            onTyping()
+        else
+            onDismissTyping()
+        setMessage(e.target.value)
+    }
+
+    const sendMessage = () => {
+        setMessage('')
+        onDismissTyping()
+        onSendMessage(message)
+    }
+
     return (
         <Box>
             <Stack
@@ -38,8 +54,9 @@ export default function ChatMessage() {
                     minRows={1}
                     fullWidth
                     maxRows={10}
-                    //value='Hello'
+                    value={message}
                     autoFocus
+                    onChange={handleChange}
                     placeholder='Type a message'
                     aria-label='message'
                     inputProps={{
@@ -49,7 +66,7 @@ export default function ChatMessage() {
                 <Button
                     variant='contained'
                     className={classes.button}
-                    href='/'
+                    onClick={sendMessage}
                 >
                     <Send htmlColor='#fff' />
                 </Button>
