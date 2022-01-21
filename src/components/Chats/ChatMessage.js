@@ -1,6 +1,6 @@
 import { Send } from '@mui/icons-material'
 import { Avatar, Box, Button, Divider, FilledInput, IconButton, Stack, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@mui/styles'
 
 export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }) {
@@ -35,7 +35,7 @@ export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }
     const sendMessage = () => {
         setMessage('')
         onDismissTyping()
-        onSendMessage(message)
+        onSendMessage(message.trim())
     }
 
     return (
@@ -48,6 +48,7 @@ export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }
                 justifyContent='stretch'
             >
                 <FilledInput
+                    id='message-field'
                     disableUnderline
                     hiddenLabel
                     multiline
@@ -59,6 +60,12 @@ export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }
                     onChange={handleChange}
                     placeholder='Type a message'
                     aria-label='message'
+                    onKeyDown={(event) =>{
+                        if(event.key === 'Enter'){
+                            event.preventDefault()
+                            sendMessage()
+                        }
+                    }}
                     inputProps={{
                         className: classes.input
                     }}
@@ -67,6 +74,7 @@ export default function ChatMessage({ onSendMessage, onTyping, onDismissTyping }
                     variant='contained'
                     className={classes.button}
                     onClick={sendMessage}
+                    disabled={message.trim().length == 0}
                 >
                     <Send htmlColor='#fff' />
                 </Button>

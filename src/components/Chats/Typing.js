@@ -3,6 +3,7 @@ import React from 'react';
 import { makeStyles } from '@mui/styles'
 import { BeatLoader } from 'react-spinners'
 import './chatbubble.css'
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Typing({ username }) {
 
@@ -15,8 +16,25 @@ export default function Typing({ username }) {
     const classes = useStyles()
 
     return (
-        <Box>
-            <div className={`talk-bubble tri-right round btm-left mb-3`}>
+        <motion.div
+            initial={{
+                y: 50,
+                opacity: 0
+            }}
+            animate={{
+                y: 0,
+                opacity: 1
+            }}
+            exit={{
+                y: 50,
+                opacity: 0
+            }}
+            transition={{
+                duration: 0.2
+            }}
+
+        >
+            <div className='chat-container'>
                 <Stack
                     spacing={0.5}
                     className='talktext'
@@ -32,9 +50,9 @@ export default function Typing({ username }) {
                             {username}
                         </Typography>
                     </Stack>
-                    <BeatLoader color='#FFF' size={10}/>
+                    <BeatLoader color='#FFF' size={10} />
                 </Stack>
             </div>
-        </Box>
+        </motion.div>
     )
 }

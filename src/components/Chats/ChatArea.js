@@ -1,5 +1,6 @@
 import { Lock } from '@mui/icons-material'
 import { Box, Card, CardContent, Chip, Divider, Paper, Stack, TextField, Typography } from '@mui/material'
+import { AnimatePresence, motion } from 'framer-motion'
 import React from 'react'
 import ChatBubble from './ChatBubble'
 import ServerMessage from './ServerMessage'
@@ -7,11 +8,12 @@ import Typing from './Typing'
 
 export default function ChatArea({ messages, typing }) {
     return (
-        <Box
-            sx={{
+        <div
+            id='chat-area'
+            style={{
                 background: '#FCFCFC',
                 overflow: 'hidden auto',
-                p: 2
+                padding: 5
             }}
         >
             <Box
@@ -31,10 +33,12 @@ export default function ChatArea({ messages, typing }) {
                         width: '100vw',
                     }}
                 >
+
                     <Card
                         sx={{
                             maxWidth: 400,
-                            background: '#000'
+                            background: '#000',
+                            mb: 2
                         }}
                     >
                         <CardContent>
@@ -57,6 +61,7 @@ export default function ChatArea({ messages, typing }) {
                             </Stack>
                         </CardContent>
                     </Card>
+
                     <Stack
                         direction='column'
                         spacing={1}
@@ -89,25 +94,28 @@ export default function ChatArea({ messages, typing }) {
                                         className={message.sender !== messages[index + 1]?.sender}
                                     />
                                 </Box>
+
                         ))}
-                        {
-                            typing &&
-                            <Box
-                                justifyContent='start'
-                                display='flex'
-                                flex={1}
-                                sx={{
-                                    width: '100%'
-                                }}
-                            >
-                                <Typing
-                                    username={typing}
-                                />
-                            </Box>
-                        }
+                        <AnimatePresence>
+                            {
+                                typing &&
+                                <Box
+                                    justifyContent='start'
+                                    display='flex'
+                                    flex={1}
+                                    sx={{
+                                        width: '100%'
+                                    }}
+                                >
+                                    <Typing
+                                        username={typing}
+                                    />
+                                </Box>
+                            }
+                        </AnimatePresence>
                     </Stack>
                 </Stack>
             </Box>
-        </Box>
+        </div>
     )
 }

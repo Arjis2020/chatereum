@@ -22,6 +22,17 @@ export default function Model() {
             })
         }
 
+        const handleDeviceMotion = (e) => {
+            console.log('Here')
+            const y = Math.round(e.accelerationIncludingGravity.y)
+            const x = Math.round(e.accelerationIncludingGravity.x)
+            if (y && x)
+                setMouse({
+                    x,
+                    y
+                })
+        }
+
         const obj = useRef()
         useFrame(() => {
             if (obj.current) {
@@ -31,9 +42,58 @@ export default function Model() {
         })
 
         useEffect(() => {
-            window.addEventListener('mousemove', handleMouseMove)
-            return () => window.addEventListener('mousemove', handleMouseMove)
+            if (detectMob()) {
+                //window.addEventListener('devicemotion', handleDeviceMotion)
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener("deviceorientation", function (event) {
+                        //tilt([event.beta, event.gamma]);
+                        setMouse({
+                            x: event.beta * 200,
+                            y: event.alpha * 5
+                        })
+                    }, true);
+                } else if (window.DeviceMotionEvent) {
+                    window.addEventListener('devicemotion', function (event) {
+                        //tilt([event.acceleration.x * 2, event.acceleration.y * 2]);
+                        setMouse({
+                            x: event.acceleration.x * 2,
+                            y: event.acceleration.y * 2
+                        })
+                    }, true);
+                } else {
+                    window.addEventListener("MozOrientation", function (orientation) {
+                        //tilt([orientation.x * 50, orientation.y * 50]);
+                        setMouse({
+                            x: orientation.x * 50,
+                            y: orientation.y * 50
+                        })
+                    }, true);
+                }
+            }
+            else
+                window.addEventListener('mousemove', handleMouseMove)
+            return () =>
+                detectMob() ?
+                    null
+                    :
+                    window.addEventListener('mousemove', handleMouseMove)
         })
+
+        const detectMob = () => {
+            const toMatch = [
+                /Android/i,
+                /webOS/i,
+                /iPhone/i,
+                /iPad/i,
+                /iPod/i,
+                /BlackBerry/i,
+                /Windows Phone/i
+            ];
+
+            return toMatch.some((toMatchItem) => {
+                return navigator.userAgent.match(toMatchItem);
+            });
+        }
 
         return (
             <mesh

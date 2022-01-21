@@ -27,6 +27,10 @@ export default function Chat({ noFooter, onChatJoined, onSendMessage, onMessageR
             timestamp: new Date().getTime()
         }])
         onSendMessage(message, room.participants)
+        setTimeout(() => {
+            var div = document.getElementById('chat-area');
+            div.scrollTop = div.scrollHeight;
+        }, 0)
     }
 
     useEffect(() => {
@@ -70,6 +74,10 @@ export default function Chat({ noFooter, onChatJoined, onSendMessage, onMessageR
                             sender,
                             timestamp
                         }])
+                        setTimeout(() => {
+                            var div = document.getElementById('chat-area');
+                            div.scrollTop = div.scrollHeight;
+                        }, 0)
                     }
                 })
                 onUserTyping({
@@ -89,6 +97,9 @@ export default function Chat({ noFooter, onChatJoined, onSendMessage, onMessageR
             }
         }
         getRoomDetails()
+        setTimeout(()=>{
+            document.getElementById('message-field').focus()
+        }, 0)
     }, [])
 
     return (

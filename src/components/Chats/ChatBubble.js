@@ -1,14 +1,18 @@
-import { Avatar, Box, Divider, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import './chatbubble.css'
+import { motion } from 'framer-motion'
 
 export default function ChatBubble({ sender, message, timestamp, className }) {
 
     const useStyles = makeStyles(theme => ({
         sender: {
-            color: theme.palette.secondary.glow
+            color: theme.palette.secondary.glow,
+        },
+        bubble: {
+            background: theme.palette.primary.main,
         }
     }))
 
@@ -16,22 +20,36 @@ export default function ChatBubble({ sender, message, timestamp, className }) {
 
     return (
         <Box>
-            <div className={`talk-bubble ${className ? 'tri-right' : null} round ${sender !== 'You' ? 'btm-left' : 'btm-right'} ${className ? 'mb-3' : null}`}>
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    y: 50,
+                    //width: '100vw'
+                }}
+                animate={{
+                    opacity: 1,
+                    y: 0,
+                    //width: '100%'
+                }}
+                transition={{
+                    duration: 0.2
+                }}
+            /* style={{
+                maxWidth: '60%',
+                width: 200
+            }} */
+            //className={`talk-bubble ${className ? 'tri-right' : null} round ${sender !== 'You' ? 'btm-left' : 'btm-right'} ${className ? 'mb-3' : null}`}
+            //className='talk-bubble'
+            >
                 <Stack
-                    spacing={0.5}
-                    className='talktext'
+                    className='chat-container'
                 >
-                    <Stack
-                        direction='row'
-                        spacing={1}
-                        alignItems='center'
+                    <Typography
+                        variant='body2'
+                        className={classes.sender}
                     >
-                        <Typography
-                            className={classes.sender}
-                        >
-                            {sender}
-                        </Typography>
-                    </Stack>
+                        {sender}
+                    </Typography>
                     <Typography
                         variant='body2'
                         fontFamily='SFProText-Regular'
@@ -46,7 +64,7 @@ export default function ChatBubble({ sender, message, timestamp, className }) {
                         {moment(timestamp).format("hh:mm A")}
                     </Typography>
                 </Stack>
-            </div>
+            </motion.div>
         </Box>
     )
 }
