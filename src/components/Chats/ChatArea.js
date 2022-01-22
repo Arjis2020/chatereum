@@ -8,114 +8,104 @@ import Typing from './Typing'
 
 export default function ChatArea({ messages, typing }) {
     return (
-        <div
-            id='chat-area'
-            style={{
-                background: '#FCFCFC',
-                overflow: 'hidden auto',
-                padding: 5
+        <Box
+            sx={{
+                //height: '100%',
+                width: '100%',
+                justifyContent: 'center',
+                display: 'flex',
+                p: 1,
+                //marginBottom: 50,
             }}
         >
-            <Box
-                className='mb-2'
+            <Stack
+                alignItems='center'
+                spacing={2}
+                direction='column'
                 sx={{
-                    height: '100vh',
-                    width: '100%',
-                    justifyContent: 'center',
-                    display: 'flex'
+                    width: '100vw',
                 }}
             >
-                <Stack
-                    alignItems='center'
-                    spacing={2}
-                    direction='column'
+
+                <Card
                     sx={{
-                        width: '100vw',
+                        maxWidth: 400,
+                        background: '#000',
+                        mb: 2
                     }}
                 >
-
-                    <Card
-                        sx={{
-                            maxWidth: 400,
-                            background: '#000',
-                            mb: 2
-                        }}
-                    >
-                        <CardContent>
-                            <Stack
-                                direction='row'
-                                alignItems='flex-start'
-                                spacing={1}
+                    <CardContent>
+                        <Stack
+                            direction='row'
+                            alignItems='flex-start'
+                            spacing={1}
+                        >
+                            <Lock color='secondary' sx={{
+                                height: 15,
+                                width: 15
+                            }} />
+                            <Typography
+                                variant='body2'
+                                color='secondary'
+                                textAlign='start'
                             >
-                                <Lock color='secondary' sx={{
-                                    height: 15,
-                                    width: 15
-                                }} />
-                                <Typography
-                                    variant='body2'
-                                    color='secondary'
-                                    textAlign='start'
-                                >
-                                    End-to-end encryption is now active which means no one except the people in the room have access to what you are sending. No, not even Chatereum has any idea what you are sending in a room.
-                                </Typography>
-                            </Stack>
-                        </CardContent>
-                    </Card>
+                                End-to-end encryption is now active which means no one except the people in the room have access to what you are sending. No, not even Chatereum has any idea what you are sending in a room.
+                            </Typography>
+                        </Stack>
+                    </CardContent>
+                </Card>
 
-                    <Stack
-                        direction='column'
-                        spacing={1}
-                        alignItems='center'
-                        sx={{
-                            width: '100%'
-                        }}
-                    >
-                        {messages && messages.map((message, index) => (
-                            message.sender && message.sender === 'Server' ?
-                                <ServerMessage
+                <Stack
+                    direction='column'
+                    spacing={1}
+                    alignItems='center'
+                    sx={{
+                        width: '100%'
+                    }}
+                >
+                    {messages && messages.map((message, index) => (
+                        message.sender && message.sender === 'Server' ?
+                            <ServerMessage
+                                key={message.id}
+                                message={message.msg}
+                            />
+                            :
+                            message.sender &&
+                            <Box
+                                justifyContent={message.sender !== 'You' ? 'start' : 'end'}
+                                display='flex'
+                                sx={{
+                                    width: '100%'
+                                }}
+                            >
+                                <ChatBubble
                                     key={message.id}
+                                    sender={message.sender}
                                     message={message.msg}
+                                    timestamp={message.timestamp}
+                                    className={message.sender !== messages[index + 1]?.sender}
                                 />
-                                :
-                                message.sender &&
-                                <Box
-                                    justifyContent={message.sender !== 'You' ? 'start' : 'end'}
-                                    display='flex'
-                                    flex={1}
-                                    sx={{
-                                        width: '100%'
-                                    }}
-                                >
-                                    <ChatBubble
-                                        key={message.id}
-                                        sender={message.sender}
-                                        message={message.msg}
-                                        timestamp={message.timestamp}
-                                        className={message.sender !== messages[index + 1]?.sender}
-                                    />
-                                </Box>
+                            </Box>
 
-                        ))}
-                        <AnimatePresence>
-                            {
-                                typing &&
-                                <Box
-                                    justifyContent='start'
-                                    display='flex'
-                                    flex={1}
-                                    sx={{
-                                        width: '100%'
-                                    }}
-                                >
-                                    <Typing
-                                        username={typing}
-                                    />
-                                </Box>
-                            }
-                        </AnimatePresence>
-                    </Stack>
+                    ))}
+                    <AnimatePresence>
+                        {
+                            typing &&
+                            <Box
+                                justifyContent='start'
+                                display='flex'
+                                sx={{
+                                    width: '100%'
+                                }}
+                            >
+                                <Typing
+                                    username={typing}
+                                />
+                            </Box>
+                        }
+                    </AnimatePresence>
                 </Stack>
-            </Box>
-        </div>
+            </Stack>
+        </Box>
     )
 }

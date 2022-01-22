@@ -8,7 +8,7 @@ import Api from './api'
 import Loader from './components/Loader';
 import { AnimatePresence, motion } from 'framer-motion';
 import Socket from './socket'
-import Encryption from './encryption'
+import Encryption from '@chatereum/react-e2ee'
 
 function App() {
   const [token, setToken] = useState(null)
