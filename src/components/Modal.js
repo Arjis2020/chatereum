@@ -13,7 +13,7 @@ export default function ModalComponent({open, onClose, children}) {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 bgcolor: 'background.paper',
-                width: '400',
+                width: 'auto',
                 p: 3,
             }}>
                 {children}

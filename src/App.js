@@ -8,7 +8,7 @@ import Api from './api'
 import Loader from './components/Loader';
 import { AnimatePresence, motion } from 'framer-motion';
 import Socket from './socket'
-import Encryption from '@chatereum/react-e2ee'
+import Encryption from './encryption'
 
 function App() {
   const [token, setToken] = useState(null)
@@ -117,7 +117,7 @@ function App() {
     for await (const { socket_id, public_key } of participants) {
       const encrypted = await Encryption.encrypt(public_key, message)
       //this encrypted object will be the payload for individual users
-      console.log("ENCRYPTED ", encrypted)
+      //console.log("ENCRYPTED ", encrypted)
       Socket.emit('private-message', {
         to: socket_id,
         encrypted
@@ -127,13 +127,41 @@ function App() {
     }
   }
 
+  const onSendFile = async ({ data, metadata }, participants) => {
+    for await (const { socket_id, public_key } of participants) {
+      const encrypted = await Encryption.encryptFile(public_key, data)
+      //this encrypted object will be the payload for individual users
+      //console.log("ENCRYPTED ", encrypted)
+      Socket.emit('private-file', {
+        to: socket_id,
+        encrypted,
+        metadata
+      })
+      /* const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, keys.private_key, encrypted.cipher_text)
+      console.log("DECRYPTED ", decrypted) */
+    }
+  }
+
   const onMessageReceived = ({ callback }) => {
     Socket.listen('new-private-message', async ({ encrypted, from, timestamp }) => {
       const decrypted = await Encryption.decrypt(encrypted.aes_key, encrypted.iv, sessionStorage.getItem('private_key'), encrypted.cipher_text)
-      console.log("DECRYPTED ", decrypted)
+      //console.log("DECRYPTED ", decrypted)
       callback({
         sender: from,
         message: decrypted,
+        timestamp
+      })
+    })
+  }
+
+  const onFileReceived = ({ callback }) => {
+    Socket.listen('new-private-file', async ({ encrypted, from, timestamp, metadata }) => {
+      const decrypted = await Encryption.decryptFile(encrypted.aes_key, encrypted.iv, sessionStorage.getItem('private_key'), encrypted.cipher_buffer)
+      console.log("DECRYPTED ", decrypted)
+      callback({
+        sender: from,
+        data: decrypted,
+        metadata,
         timestamp
       })
     })
@@ -216,7 +244,9 @@ function App() {
                 onChatJoined={onChatJoined}
                 onJoinRoom={onJoinRoom}
                 onSendMessage={onSendMessage}
+                onSendFile={onSendFile}
                 onMessageReceived={onMessageReceived}
+                onFileReceived={onFileReceived}
                 onTyping={onTyping}
                 onUserTyping={onUserTyping}
                 onDismissTyping={onDismissTyping}

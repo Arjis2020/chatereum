@@ -4,7 +4,19 @@ import CreateRoom from './CreateRoom'
 import Home from './Home'
 import Chat from './Chats'
 
-export default function RoutesHandler({ onCreateRoom, onChatJoined, onJoinRoom, onSendMessage, onMessageReceived, onTyping, onUserTyping, onDismissTyping, onUserDismissTyping }) {
+export default function RoutesHandler({
+    onCreateRoom,
+    onChatJoined,
+    onJoinRoom,
+    onSendMessage,
+    onSendFile,
+    onMessageReceived,
+    onFileReceived,
+    onTyping,
+    onUserTyping,
+    onDismissTyping,
+    onUserDismissTyping
+}) {
     return (
         <BrowserRouter>
             <Routes>
@@ -17,7 +29,9 @@ export default function RoutesHandler({ onCreateRoom, onChatJoined, onJoinRoom, 
                             noFooter
                             onChatJoined={onChatJoined}
                             onSendMessage={onSendMessage}
+                            onSendFile={onSendFile}
                             onMessageReceived={onMessageReceived}
+                            onFileReceived={onFileReceived}
                             onTyping={onTyping}
                             onUserTyping={onUserTyping}
                             onUserDismissTyping={onUserDismissTyping}

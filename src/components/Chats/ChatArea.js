@@ -77,11 +77,12 @@ export default function ChatArea({ messages, typing }) {
                                 sx={{
                                     width: '100%'
                                 }}
+                                key={message.id}                                
                             >
                                 <ChatBubble
-                                    key={message.id}
                                     sender={message.sender}
                                     message={message.msg}
+                                    metadata={message.metadata}
                                     timestamp={message.timestamp}
                                     className={message.sender !== messages[index + 1]?.sender}
                                 />
