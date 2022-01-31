@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/chatereum/static/css/main.021c448e.css",
-    "main.js": "/chatereum/static/js/main.58673cd7.js",
+    "main.css": "/chatereum/static/css/main.ca7ebc58.css",
+    "main.js": "/chatereum/static/js/main.c2c8d5b1.js",
     "static/js/787.9c56df1a.chunk.js": "/chatereum/static/js/787.9c56df1a.chunk.js",
     "static/media/SFProText-Heavy.ttf": "/chatereum/static/media/SFProText-Heavy.a6d0a7c7709218b4a46c.ttf",
     "static/media/SFProText-Bold.ttf": "/chatereum/static/media/SFProText-Bold.9dae2991f4fb30a5f7e0.ttf",
@@ -9,12 +9,12 @@
     "static/media/SFProText-Medium.ttf": "/chatereum/static/media/SFProText-Medium.fc3c323b3b2bb1c643ee.ttf",
     "static/media/SFProText-Regular.ttf": "/chatereum/static/media/SFProText-Regular.90da7ab18293ca42e335.ttf",
     "index.html": "/chatereum/index.html",
-    "main.021c448e.css.map": "/chatereum/static/css/main.021c448e.css.map",
-    "main.58673cd7.js.map": "/chatereum/static/js/main.58673cd7.js.map",
+    "main.ca7ebc58.css.map": "/chatereum/static/css/main.ca7ebc58.css.map",
+    "main.c2c8d5b1.js.map": "/chatereum/static/js/main.c2c8d5b1.js.map",
     "787.9c56df1a.chunk.js.map": "/chatereum/static/js/787.9c56df1a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.021c448e.css",
-    "static/js/main.58673cd7.js"
+    "static/css/main.ca7ebc58.css",
+    "static/js/main.c2c8d5b1.js"
   ]
 }
