@@ -5,5 +5,7 @@ const ROOM = BASE_URL + 'room/'
 const ROOM_CREATE = ROOM + 'create/'
 const ROOM_DETAILS = ROOM + 'details/'
 
+const RATING = BASE_URL + 'rating/'
 
-module.exports = { INIT, ROOM, ROOM_CREATE, ROOM_DETAILS }
+
+export default { INIT, ROOM, ROOM_CREATE, ROOM_DETAILS, RATING }

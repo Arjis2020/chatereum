@@ -189,6 +189,11 @@ function App() {
     })
   }
 
+  const onLeaveRoom = (callback) => {
+    Socket.disconnect()
+    callback()
+  }
+
   const theme = createTheme({
     palette: {
       primary: {
@@ -251,6 +256,7 @@ function App() {
                 onUserTyping={onUserTyping}
                 onDismissTyping={onDismissTyping}
                 onUserDismissTyping={onUserDismissTyping}
+                onLeaveRoom={onLeaveRoom}
               />
             </motion.div>
           </Container >

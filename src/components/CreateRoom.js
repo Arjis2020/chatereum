@@ -108,23 +108,6 @@ export default function CreateRoom({ noFooter, onCreateRoom }) {
                                 </Typography>
                             </Stack>
                             <TextField
-                                label='Username'
-                                placeholder='Enter a username'
-                                value={username}
-                                onChange={handleUsernameChange}
-                                type='text'
-                                required
-                                inputProps={{
-                                    maxLength: 100
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Person color='primary' />
-                                    )
-                                }}
-                                fullWidth
-                            />
-                            <TextField
                                 label='Room name'
                                 placeholder='Enter room name'
                                 value={roomName}
@@ -137,6 +120,23 @@ export default function CreateRoom({ noFooter, onCreateRoom }) {
                                 InputProps={{
                                     endAdornment: (
                                         <Chat color='primary' />
+                                    )
+                                }}
+                                fullWidth
+                            />
+                            <TextField
+                                label='Username'
+                                placeholder='Enter a username'
+                                value={username}
+                                onChange={handleUsernameChange}
+                                type='text'
+                                required
+                                inputProps={{
+                                    maxLength: 100
+                                }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <Person color='primary' />
                                     )
                                 }}
                                 fullWidth

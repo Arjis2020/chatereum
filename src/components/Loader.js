@@ -10,7 +10,8 @@ export default function Loader() {
                 width: '100vw',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                overflow: 'hidden hidden'
             }}
         >
             <Box

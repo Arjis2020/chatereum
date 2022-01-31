@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import CreateRoom from './CreateRoom'
 import Home from './Home'
 import Chat from './Chats'
+import Review from './Review'
 
 export default function RoutesHandler({
     onCreateRoom,
@@ -15,7 +16,8 @@ export default function RoutesHandler({
     onTyping,
     onUserTyping,
     onDismissTyping,
-    onUserDismissTyping
+    onUserDismissTyping,
+    onLeaveRoom
 }) {
     return (
         <BrowserRouter>
@@ -36,7 +38,14 @@ export default function RoutesHandler({
                             onUserTyping={onUserTyping}
                             onUserDismissTyping={onUserDismissTyping}
                             onDismissTyping={onDismissTyping}
+                            onLeaveRoom={onLeaveRoom}
                         />
+                    }
+                />
+                <Route 
+                    path='/review'
+                    element={
+                        <Review />
                     }
                 />
             </Routes>

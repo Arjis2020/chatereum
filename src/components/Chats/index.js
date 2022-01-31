@@ -7,10 +7,11 @@ import Footer from '../Footer'
 import ChatArea from './ChatArea'
 import ChatHeader from './ChatHeader'
 import ChatMessage from './ChatMessage'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import Loader from '../Loader'
 import { v4 as uuidV4 } from 'uuid'
 import Encryption from '@chatereum/react-e2ee'
+import Review from '../Review'
 
 export default function Chat({
     noFooter,
@@ -22,22 +23,19 @@ export default function Chat({
     onTyping,
     onUserTyping,
     onDismissTyping,
-    onUserDismissTyping
+    onUserDismissTyping,
+    onLeaveRoom
 }) {
     const [room, setRoom] = useState(null)
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setLoading] = useState(true)
     const [messages, setMessages] = useState([])
     const [typing, setTyping] = useState(null)
+    const [hasLeft, setRoomLeft] = useState(false)
 
-    const sendMessage = (message) => {
-        setMessages(oldMessages => [...oldMessages, {
-            id: uuidV4(),
-            sender: 'You',
-            msg: message,
-            timestamp: new Date().getTime()
-        }])
-        onSendMessage(message, room.participants)
+    const navigate = useNavigate()
+
+    const scrollToBottom = () => {
         setTimeout(() => {
             var div = document.getElementsByClassName('chat-area');
             for (let i = 0; i < div.length; i++) {
@@ -49,6 +47,17 @@ export default function Chat({
                 })
             }
         }, 0)
+    }
+
+    const sendMessage = (message) => {
+        setMessages(oldMessages => [...oldMessages, {
+            id: uuidV4(),
+            sender: 'You',
+            msg: message,
+            timestamp: new Date().getTime()
+        }])
+        onSendMessage(message, room.participants)
+        scrollToBottom()
     }
 
     const sendFile = ({ data, metadata }) => {
@@ -63,16 +72,16 @@ export default function Chat({
             data: data.raw,
             metadata
         }, room.participants)
+        scrollToBottom()
+    }
+
+    const leaveRoom = () => {
+        setLoading(true)
+        onLeaveRoom(() => {
+            setRoomLeft(true)
+        })
         setTimeout(() => {
-            var div = document.getElementsByClassName('chat-area');
-            for (let i = 0; i < div.length; i++) {
-                //div.item(i).scrollTop = div.item(i).scrollHeight
-                //div.item(i).scrollIntoView({ behavior: 'smooth' })
-                div.item(i).scroll({
-                    top: div.item(i).scrollHeight,
-                    behavior: 'smooth'
-                })
-            }
+            setLoading(false)
         }, 0)
     }
 
@@ -117,17 +126,7 @@ export default function Chat({
                             sender,
                             timestamp
                         }])
-                        setTimeout(() => {
-                            var div = document.getElementsByClassName('chat-area');
-                            for (let i = 0; i < div.length; i++) {
-                                //div.item(i).scrollTop = div.item(i).scrollHeight
-                                //div.item(i).scrollIntoView({ behavior: 'smooth' })
-                                div.item(i).scroll({
-                                    top: div.item(i).scrollHeight,
-                                    behavior: 'smooth'
-                                })
-                            }
-                        }, 0)
+                        scrollToBottom()
                     }
                 })
                 onFileReceived({
@@ -147,17 +146,7 @@ export default function Chat({
                             sender,
                             timestamp
                         }])
-                        setTimeout(() => {
-                            var div = document.getElementsByClassName('chat-area');
-                            for (let i = 0; i < div.length; i++) {
-                                //div.item(i).scrollTop = div.item(i).scrollHeight
-                                //div.item(i).scrollIntoView({ behavior: 'smooth' })
-                                div.item(i).scroll({
-                                    top: div.item(i).scrollHeight,
-                                    behavior: 'smooth'
-                                })
-                            }
-                        }, 0)
+                        scrollToBottom()
                     }
                 })
                 onUserTyping({
@@ -180,6 +169,7 @@ export default function Chat({
         setTimeout(() => {
             document.getElementById('message-field').focus()
         }, 0)
+        scrollToBottom()
     }, [])
 
     return (
@@ -187,99 +177,119 @@ export default function Chat({
             <Loader />
             :
             <>
-                <Box
-                    sx={{
-                        display: {
-                            xs: 'none',
-                            md: 'inline-block'
-                        },
-                    }}
-                >
-                    <Container
-                        maxWidth='xl'
-                        sx={{
-                            display: 'flex',
-                            height: '100vh',
-                            width: '100vw',
-                        }}
-                    >
-                        <Stack
-                            sx={{
-                                width: '100%',
-                                boxShadow: 4
-                            }}
-                        >
-                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.size} />
-                            <Divider />
-                            <div
-                                className='chat-area'
-                                style={{
-                                    background: '#FCFCFC',
-                                    overflow: 'hidden auto',
-                                    height: '100%'
+                {
+                    !hasLeft ?
+                        <>
+                            <Box
+                                sx={{
+                                    display: {
+                                        xs: 'none',
+                                        md: 'inline-block'
+                                    },
                                 }}
                             >
-                                <ChatArea
-                                    messages={messages}
-                                    typing={typing}
-                                />
-                            </div>
-                            <ChatMessage
-                                onSendMessage={sendMessage}
-                                onSendFile={sendFile}
-                                onTyping={() => onTyping(room.room_code)}
-                                onDismissTyping={() => onDismissTyping(room.room_code)}
-                            />
-                        </Stack>
-                    </Container>
-                </Box>
-                <Box
-                    sx={{
-                        display: {
-                            xs: 'flex',
-                            md: 'none'
-                        }
-                    }}
-                >
-                    <Container
-                        sx={{
-                            display: 'flex',
-                            height: '100vh',
-                            width: '100vw',
-                        }}
-                        disableGutters
-                    >
-                        <Stack
-                            sx={{
-                                width: '100%',
-                                //boxShadow: 4
-                            }}
-                        >
-                            <ChatHeader roomImg={room.room_avatar} roomName={room.room_name} participants={room.size} />
-                            <Divider />
-                            <div
-                                className='chat-area'
-                                style={{
-                                    background: '#FCFCFC',
-                                    overflow: 'hidden auto',
-                                    height: '100%'
+                                <Container
+                                    maxWidth='xl'
+                                    sx={{
+                                        display: 'flex',
+                                        height: '100vh',
+                                        width: '100vw',
+                                    }}
+                                >
+                                    <Stack
+                                        sx={{
+                                            width: '100%',
+                                            boxShadow: 4
+                                        }}
+                                    >
+                                        <ChatHeader
+                                            roomImg={room.room_avatar}
+                                            roomName={room.room_name}
+                                            participants={room.size}
+                                            onLeaveRoom={leaveRoom}
+                                        />
+                                        <Divider />
+                                        <div
+                                            className='chat-area'
+                                            style={{
+                                                background: '#FCFCFC',
+                                                overflow: 'hidden auto',
+                                                height: '100%'
+                                            }}
+                                        >
+                                            <ChatArea
+                                                messages={messages}
+                                                typing={typing}
+                                            />
+                                        </div>
+                                        <ChatMessage
+                                            onSendMessage={sendMessage}
+                                            onSendFile={sendFile}
+                                            onTyping={() => onTyping(room.room_code)}
+                                            onDismissTyping={() => onDismissTyping(room.room_code)}
+                                        />
+                                    </Stack>
+                                </Container>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: {
+                                        xs: 'flex',
+                                        md: 'none'
+                                    }
                                 }}
                             >
-                                <ChatArea
-                                    messages={messages}
-                                    typing={typing}
-                                />
-                            </div>
-                            <ChatMessage
-                                onSendMessage={sendMessage}
-                                onSendFile={sendFile}
-                                onTyping={() => onTyping(room.room_code)}
-                                onDismissTyping={() => onDismissTyping(room.room_code)}
-                            />
-                        </Stack>
-                    </Container>
-                </Box>
-                {!noFooter && <Footer />}
+                                <Container
+                                    sx={{
+                                        display: 'flex',
+                                        height: '100vh',
+                                        width: '100vw',
+                                    }}
+                                    disableGutters
+                                >
+                                    <Stack
+                                        sx={{
+                                            width: '100%',
+                                            //boxShadow: 4
+                                        }}
+                                    >
+                                        <ChatHeader
+                                            roomImg={room.room_avatar}
+                                            roomName={room.room_name}
+                                            participants={room.size}
+                                            onLeaveRoom={leaveRoom}
+                                        />
+                                        <Divider />
+                                        <div
+                                            className='chat-area'
+                                            style={{
+                                                background: '#FCFCFC',
+                                                overflow: 'hidden auto',
+                                                height: '100%'
+                                            }}
+                                        >
+                                            <ChatArea
+                                                messages={messages}
+                                                typing={typing}
+                                            />
+                                        </div>
+                                        <ChatMessage
+                                            onSendMessage={sendMessage}
+                                            onSendFile={sendFile}
+                                            onTyping={() => onTyping(room.room_code)}
+                                            onDismissTyping={() => onDismissTyping(room.room_code)}
+                                        />
+                                    </Stack>
+                                </Container>
+                            </Box>
+                        </>
+                        :
+                        <Review />
+                }
+                {
+                    !noFooter &&
+                    <Footer />
+                }
             </>
     )
 }

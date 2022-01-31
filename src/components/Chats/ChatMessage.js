@@ -41,10 +41,12 @@ export default function ChatMessage({ onSendMessage, onSendFile, onTyping, onDis
         },
         img: {
             [theme.breakpoints.down('sm')]: {
-                maxWidth: 280
+                maxWidth: 280,
+                maxHeight: 500
             },
             [theme.breakpoints.up('sm')]: {
-                maxWidth: '50vw'
+                maxWidth: '50vw',
+                maxHeight: '70vh'
             },
             /* [theme.breakpoints.down('xl')] : {
                 width: 280
@@ -246,6 +248,8 @@ export default function ChatMessage({ onSendMessage, onSendFile, onTyping, onDis
                                     />
                                     <Typography
                                         variant='h6'
+                                        maxWidth={'60%'}
+                                        noWrap
                                     >
                                         {modal.data.name}
                                     </Typography>
@@ -375,7 +379,7 @@ export default function ChatMessage({ onSendMessage, onSendFile, onTyping, onDis
                 multiline
                 minRows={1}
                 fullWidth
-                maxRows={7}
+                maxRows={5}
                 variant='filled'
                 value={message}
                 autoFocus

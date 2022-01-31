@@ -23,7 +23,7 @@ export default function ChatArea({ messages, typing }) {
                 spacing={2}
                 direction='column'
                 sx={{
-                    width: '100vw',
+                    width: '100%',
                 }}
             >
 
@@ -75,7 +75,7 @@ export default function ChatArea({ messages, typing }) {
                                 justifyContent={message.sender !== 'You' ? 'start' : 'end'}
                                 display='flex'
                                 sx={{
-                                    width: '100%'
+                                    width: '100%',
                                 }}
                                 key={message.id}                                
                             >
@@ -84,7 +84,6 @@ export default function ChatArea({ messages, typing }) {
                                     message={message.msg}
                                     metadata={message.metadata}
                                     timestamp={message.timestamp}
-                                    className={message.sender !== messages[index + 1]?.sender}
                                 />
                             </Box>
 

@@ -3,7 +3,12 @@ import { Container, Stack, Box, Avatar, Typography, IconButton, Popper, Grow, Pa
 import { Call, VideoCall, MoreVert, Info, Cancel } from '@mui/icons-material'
 
 
-export default function ChatHeader({ roomName, roomImg, participants }) {
+export default function ChatHeader({
+    roomName,
+    roomImg,
+    participants,
+    onLeaveRoom
+}) {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
 
@@ -142,7 +147,7 @@ export default function ChatHeader({ roomName, roomImg, participants }) {
                                             </Stack>
                                         </MenuItem>
                                         <Divider />
-                                        <MenuItem onClick={handleClose}>
+                                        <MenuItem onClick={onLeaveRoom}>
                                             <Stack
                                                 direction='row'
                                                 spacing={1}

@@ -1,13 +1,13 @@
 import React from 'react';
-import {Modal, Container} from '@mui/material'
+import { Modal, Container, Box } from '@mui/material'
 
-export default function ModalComponent({open, onClose, children}) {
+export default function ModalComponent({ open, onClose, children, sx }) {
     return (
         <Modal
             open={open}
             onClose={onClose}
         >
-            <Container maxWidth='xl' sx={{
+            <Box sx={sx ? sx : {
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
@@ -17,7 +17,7 @@ export default function ModalComponent({open, onClose, children}) {
                 p: 3,
             }}>
                 {children}
-            </Container>
+            </Box>
         </Modal>
     )
 }
