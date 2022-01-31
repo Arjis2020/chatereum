@@ -2,6 +2,7 @@
   "name": "chatereum",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://modest-goldberg-e102f3.netlify.app/",
   "dependencies": {
     "@chatereum/react-e2ee": "^2.0.3",
     "@emotion/react": "^11.6.0",
@@ -46,6 +47,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "eject": "react-scripts eject",
     "push": "git add . && git commit -m \"%npm_config_message%\" && git push origin main"
   },
@@ -66,5 +69,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }

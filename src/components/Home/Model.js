@@ -10,7 +10,7 @@ const SENSITIVITY = 0.003 / 3
 export default function Model() {
 
     const Mesh = () => {
-        const gltf = useLoader(GLTFLoader, '/models/scene.gltf')
+        const gltf = useLoader(GLTFLoader, 'models/scene.gltf')
         const [mouse, setMouse] = useState({
             x: 0,
             y: 0
