@@ -36,7 +36,7 @@ export default function Model() {
         const obj = useRef()
         useFrame(() => {
             if (obj.current) {
-                obj.current.rotation.x = mouse.y * SENSITIVITY
+                obj.current.rotation.x = mouse.y * SENSITIVITY * 0.5
                 obj.current.rotation.y = mouse.x * SENSITIVITY
             }
         })

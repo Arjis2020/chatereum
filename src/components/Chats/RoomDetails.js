@@ -27,9 +27,7 @@ export default function RoomDetails() {
             <Box
                 className='room-status'
                 sx={{
-                    background: 'red',
                     textAlign: 'center',
-                    
                 }}
             >
                 <Typography

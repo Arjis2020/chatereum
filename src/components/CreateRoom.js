@@ -41,7 +41,11 @@ export default function CreateRoom({ noFooter, onCreateRoom }) {
             username,
             room_avatar: room.roomAvatar,
             onSuccess: (payload) => {
-                navigate(payload.navigate)
+                navigate(payload.navigate, {
+                    state: {
+                        username: payload.username
+                    }
+                })
             }
         })
     }

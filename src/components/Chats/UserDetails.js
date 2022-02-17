@@ -1,42 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import { Chat, Lock, Person } from '@mui/icons-material'
-import { Box, Card, CardContent, Link, Stack, TextField, Typography } from '@mui/material'
-import Bubbles from './Bubbles'
+import { Avatar, Box, Card, CardContent, Link, Paper, Stack, TextField, Typography } from '@mui/material'
+import Bubbles from '../Home/Bubbles'
 
-import Model from './Model'
+import Model from '../Home/Model'
 import { LoadingButton } from '@mui/lab'
 import Footer from '../Footer'
 import { useNavigate } from 'react-router-dom'
 
-export default function Home({ noFooter, onJoinRoom }) {
+export default function UserDetails({ noFooter, onUserJoined, room_name, room_avatar, participants }) {
 
     const [username, setUsername] = useState('')
-    const [roomCode, setRoomCode] = useState('')
     const [isLoading, setLoading] = useState(false)
-
-    const navigate = useNavigate()
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value)
     }
 
-    const handleRoomCodeChange = (e) => {
-        setRoomCode(e.target.value)
-    }
-
     const onJoinClicked = () => {
         setLoading(true)
-        onJoinRoom({
+        /*onUserJoined({
             room_code: roomCode,
             username,
             onSuccess: (data) => {
-                navigate(data.navigate, {
-                    state: {
-                        username: data.username
-                    }
-                })
+                navigate(data.navigate)
             }
-        })
+        })*/
+        onUserJoined(username, null)
     }
 
     return (
@@ -90,37 +80,35 @@ export default function Home({ noFooter, onJoinRoom }) {
                                 spacing={1}
                                 alignItems='center'
                             >
-                                <Typography
-                                    variant='h4'
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    justifyContent='center'
+                                    spacing={1}
                                 >
-                                    Welcome Back
-                                </Typography>
-                                <Typography
-                                    variant='body2'
-                                    color='GrayText'
-                                    fontFamily='SFProText-Regular'
-                                    maxWidth={350}
-                                >
-                                    Enter a Username and Room Code to get started
-                                </Typography>
+                                    <Avatar
+                                        src={room_avatar}
+                                        sx={{
+                                            width: 50,
+                                            height: 50
+                                        }}
+                                    />
+                                    <Stack>
+                                        <Typography
+                                            variant='h4'
+                                        >
+                                            {room_name}
+                                        </Typography>
+                                        <Typography
+                                            variant='body2'
+                                            color='GrayText'
+                                            marginLeft={0.7}
+                                        >
+                                            Chatereum room invite
+                                        </Typography>
+                                    </Stack>
+                                </Stack>
                             </Stack>
-                            <TextField
-                                label='Room Code'
-                                placeholder='Enter room code'
-                                value={roomCode}
-                                onChange={handleRoomCodeChange}
-                                type='text'
-                                inputProps={{
-                                    maxLength: 6
-                                }}
-                                required
-                                InputProps={{
-                                    endAdornment: (
-                                        <Chat color='primary' />
-                                    )
-                                }}
-                                fullWidth
-                            />
                             <TextField
                                 label='Username'
                                 placeholder='Enter a username'
@@ -147,7 +135,7 @@ export default function Home({ noFooter, onJoinRoom }) {
                                     fullWidth
                                     size='large'
                                     loading={isLoading}
-                                    disabled={!username || !roomCode}
+                                    disabled={!username}
                                     onClick={onJoinClicked}
                                 >
                                     Join room
@@ -168,15 +156,6 @@ export default function Home({ noFooter, onJoinRoom }) {
                         </Stack>
                     </CardContent>
                 </Card>
-                <Typography
-                    textAlign='center'
-                    className='mt-4'
-                >
-                    Don't have a room code?&nbsp;
-                    <Link href='/create'>
-                        Create your own room.
-                    </Link>
-                </Typography>
             </Stack>
             {!noFooter && <Footer />}
         </Box>

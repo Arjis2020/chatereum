@@ -42,7 +42,8 @@ function App() {
       })
       if (response.data.status === 'success') {
         onSuccess({
-          navigate: `/chat?room_code=${response.data.room_code}&username=${username}`
+          navigate: `/chat?room_code=${response.data.room_code}`,
+          username
         })
       }
     }
@@ -57,7 +58,8 @@ function App() {
       if (response.data.status === 'success') {
         const { room } = response.data
         onSuccess({
-          navigate: `/chat?room_code=${room.room_code}&username=${username}`
+          navigate: `/chat?room_code=${room.room_code}`,
+          username
         })
       }
     }
