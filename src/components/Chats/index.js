@@ -12,6 +12,7 @@ import Loader from '../Loader'
 import { v4 as uuidV4 } from 'uuid'
 import Encryption from '@chatereum/react-e2ee'
 import Review from '../Review'
+import RoomDetails from './RoomDetails'
 
 export default function Chat({
     noFooter,
@@ -152,11 +153,13 @@ export default function Chat({
                 onUserTyping({
                     callback: ({ username }) => {
                         setTyping(username)
+                        scrollToBottom()
                     }
                 })
                 onUserDismissTyping({
                     callback: () => {
                         setTyping(null)
+                        scrollToBottom()
                     }
                 })
                 setLoading(false)
@@ -194,40 +197,51 @@ export default function Chat({
                                         display: 'flex',
                                         height: '100vh',
                                         width: '100vw',
+                                        overflow: 'hidden'
+                                        //background: 'red'
                                     }}
                                 >
                                     <Stack
-                                        sx={{
-                                            width: '100%',
-                                            boxShadow: 4
-                                        }}
+                                        direction='row'
+                                        spacing={2}
+                                        width='100%'
+                                        //height='100%'
+                                        justifyContent='space-evenly'
                                     >
-                                        <ChatHeader
-                                            roomImg={room.room_avatar}
-                                            roomName={room.room_name}
-                                            participants={room.size}
-                                            onLeaveRoom={leaveRoom}
-                                        />
-                                        <Divider />
-                                        <div
-                                            className='chat-area'
-                                            style={{
-                                                background: '#FCFCFC',
-                                                overflow: 'hidden auto',
-                                                height: '100%'
+                                        <RoomDetails />
+                                        <Stack
+                                            sx={{
+                                                width: '100%',
+                                                boxShadow: 4
                                             }}
                                         >
-                                            <ChatArea
-                                                messages={messages}
-                                                typing={typing}
+                                            <ChatHeader
+                                                roomImg={room.room_avatar}
+                                                roomName={room.room_name}
+                                                participants={room.size}
+                                                onLeaveRoom={leaveRoom}
                                             />
-                                        </div>
-                                        <ChatMessage
-                                            onSendMessage={sendMessage}
-                                            onSendFile={sendFile}
-                                            onTyping={() => onTyping(room.room_code)}
-                                            onDismissTyping={() => onDismissTyping(room.room_code)}
-                                        />
+                                            <Divider />
+                                            <div
+                                                className='chat-area'
+                                                style={{
+                                                    background: '#FCFCFC',
+                                                    overflow: 'hidden auto',
+                                                    height: '100%'
+                                                }}
+                                            >
+                                                <ChatArea
+                                                    messages={messages}
+                                                    typing={typing}
+                                                />
+                                            </div>
+                                            <ChatMessage
+                                                onSendMessage={sendMessage}
+                                                onSendFile={sendFile}
+                                                onTyping={() => onTyping(room.room_code)}
+                                                onDismissTyping={() => onDismissTyping(room.room_code)}
+                                            />
+                                        </Stack>
                                     </Stack>
                                 </Container>
                             </Box>

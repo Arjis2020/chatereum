@@ -5,12 +5,12 @@ import { Html } from '@react-three/drei'
 import { CircularProgress, Box } from '@mui/material'
 import Loader from '../Loader'
 
-const SENSITIVITY = 0.003 / 3
+const SENSITIVITY = 0.003 / 2
 
 export default function Model() {
 
     const Mesh = () => {
-        const gltf = useLoader(GLTFLoader, 'models/scene.gltf')
+        const gltf = useLoader(GLTFLoader, `${process.env.PUBLIC_URL}/models/scene.gltf`)
         const [mouse, setMouse] = useState({
             x: 0,
             y: 0
@@ -36,7 +36,7 @@ export default function Model() {
         const obj = useRef()
         useFrame(() => {
             if (obj.current) {
-                obj.current.rotation.x = mouse.y * SENSITIVITY * 0.5
+                obj.current.rotation.x = mouse.y * SENSITIVITY
                 obj.current.rotation.y = mouse.x * SENSITIVITY
             }
         })
