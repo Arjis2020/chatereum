@@ -5,11 +5,12 @@ import { makeStyles } from '@mui/styles';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import './roomDetails.css'
 
-export default function RoomDetails() {
+export default function RoomDetails({ room }) {
 
     const useStyles = makeStyles((theme) => ({
         img: {
             width: "50%",
+            borderRadius: "50%"
         }
     }))
 
@@ -76,7 +77,7 @@ export default function RoomDetails() {
                                 variant='h6'
                                 fontFamily='SFProText-Bold'
                             >
-                                8695EC
+                                {room.room_code}
                             </Typography>
                             <Stack
                                 direction='row'
@@ -122,7 +123,7 @@ export default function RoomDetails() {
                         }}
                     >
                         <img
-                            src='/logo512.png'
+                            src={room.room_avatar}
                             className={classes.img}
                         />
                     </Paper>
@@ -137,7 +138,7 @@ export default function RoomDetails() {
                             mt: 2
                         }}
                     />
-                    <Typography
+                    {/* <Typography
                         variant='body2'
                         color='GrayText'
                         sx={{
@@ -147,7 +148,7 @@ export default function RoomDetails() {
                         Participants
                     </Typography>
                     <Stack>
-                        {['Ram', 'Shyam', 'Jonas', 'Shreya', 'Souromi'].map(participant => (
+                        {room.participants.map(participant => (
                             <Paper
                                 className='p-2 px-3 mt-2'
                                 sx={{
@@ -156,57 +157,54 @@ export default function RoomDetails() {
                                     cursor: 'text'
                                 }}
                                 onClick={() => {
-                                    /**
-                                     * @TODO
-                                     * show snackbar and also copy room code
-                                     */
-                                }}
+                                    
+                    }}
                             >
-                                <Stack
-                                    direction='row'
-                                    justifyContent='space-between'
+                    <Stack
+                        direction='row'
+                        justifyContent='space-between'
+                    >
+                        <Stack
+                            direction='row'
+                            spacing={1}
+                            alignItems='center'
+                        >
+                            <Avatar
+                                src='/logo512.png'
+                                sx={{
+                                    background: (theme) => theme.palette.primary.dark,
+                                    p: 0.8
+                                }}
+                            />
+                            <Stack>
+                                <Typography
+                                    variant='body1'
                                 >
-                                    <Stack
-                                        direction='row'
-                                        spacing={1}
-                                        alignItems='center'
-                                    >
-                                        <Avatar
-                                            src='/logo512.png'
-                                            sx={{
-                                                background: (theme) => theme.palette.primary.dark,
-                                                p: 0.8
-                                            }}
-                                        />
-                                        <Stack>
-                                            <Typography
-                                                variant='body1'
-                                            >
-                                                {participant}
-                                            </Typography>
-                                            <Typography
-                                                variant='caption'
-                                                color='GrayText'
-                                            >
-                                                A Chatereum user
-                                            </Typography>
-                                        </Stack>
-                                    </Stack>
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        justifyContent='space-between'
-                                    >
-                                        <IconButton>
-                                            <PersonRemoveIcon />
-                                        </IconButton>
-                                    </Stack>
-                                </Stack>
-                            </Paper>
-                        ))}
+                                    {participant.username}
+                                </Typography>
+                                <Typography
+                                    variant='caption'
+                                    color='GrayText'
+                                >
+                                    A Chatereum user
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            justifyContent='space-between'
+                        >
+                            <IconButton>
+                                <PersonRemoveIcon />
+                            </IconButton>
+                        </Stack>
                     </Stack>
-                </Container>
-            </Box>
-        </Box>
+                </Paper>
+                        ))}
+            </Stack> */}
+        </Container>
+            </Box >
+        </Box >
     )
 }

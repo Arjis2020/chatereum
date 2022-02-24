@@ -50,7 +50,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "eject": "react-scripts eject",
-    "push": "git add . && git commit -m \"%npm_config_message%\" && git push origin main"
+    "push": "git add . && git commit -m \"%npm_config_message%\" && git push origin main",
+    "deploy-remote" : "npm run build && cd build && scp -r * root@chatereum.ml:/var/www/html"
   },
   "eslintConfig": {
     "extends": [

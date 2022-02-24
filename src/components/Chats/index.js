@@ -94,17 +94,18 @@ export default function Chat({
             try {
                 var response = await axios.get(`${Api.ROOM_DETAILS}?room_code=${searchParams.get('room_code')}`)
                 const { room } = response.data
+                console.log(room)
                 setRoom({
                     room_code: room.room_code,
                     size: 0,
-                    participants: [],
+                    participants: room.participants || [],
                     room_avatar: room.room_avatar,
                     room_name: room.room_name
                 })
-                setLoading(false)
                 if (username) {
                     onUserJoined(username, room)
                 }
+                setLoading(false)
             }
             catch (err) {
                 console.log(err.toString())
@@ -112,12 +113,13 @@ export default function Chat({
         }
         getRoomDetails()
         setTimeout(() => {
-            document.getElementById('message-field').focus()
+            document.getElementById('message-field')?.focus()
         }, 0)
         scrollToBottom()
     }, [])
 
     const onUserJoined = async (_username, _room) => {
+        setLoading(true)
         if (!username)
             setUsername(_username)
         const keys = await Encryption.getKeys()
@@ -184,6 +186,7 @@ export default function Chat({
                 scrollToBottom()
             }
         })
+        setLoading(false)
     }
 
     return (
@@ -227,7 +230,7 @@ export default function Chat({
                                             //height='100%'
                                             justifyContent='space-evenly'
                                         >
-                                            <RoomDetails />
+                                            <RoomDetails room={room}/>
                                             <Stack
                                                 sx={{
                                                     width: '100%',

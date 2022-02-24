@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom'
 export default function UserDetails({ noFooter, onUserJoined, room_name, room_avatar, participants }) {
 
     const [username, setUsername] = useState('')
-    const [isLoading, setLoading] = useState(false)
+    const [isLoading, setLoading] = useState(true)
+    const [members, setMembers] = useState("")
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value)
@@ -19,15 +20,21 @@ export default function UserDetails({ noFooter, onUserJoined, room_name, room_av
 
     const onJoinClicked = () => {
         setLoading(true)
-        /*onUserJoined({
-            room_code: roomCode,
-            username,
-            onSuccess: (data) => {
-                navigate(data.navigate)
-            }
-        })*/
         onUserJoined(username, null)
     }
+
+    useEffect(() => {
+        var str = ""
+        var cap = participants.length > 5 ? 5 : participants.length
+        for (let i = 0; i < cap; i++) {
+            str += participants[i].username + ", "
+        }
+        str = str.substring(0, str.length - 2)
+        setMembers(str);
+        setTimeout(() => {
+            setLoading(false)
+        }, 0)
+    })
 
     return (
         <Box
@@ -140,18 +147,30 @@ export default function UserDetails({ noFooter, onUserJoined, room_name, room_av
                                 >
                                     Join room
                                 </LoadingButton>
-                                <Typography
-                                    variant='body2'
-                                    color='GrayText'
-                                    fontFamily='SFProText-Regular'
-                                    textAlign='center'
+                                <Stack
+                                    spacing={4}
                                 >
-                                    Before joining, make sure you have read our&nbsp;
-                                    <Link>
-                                        terms of service
-                                    </Link>
-                                    &nbsp;and agree to it
-                                </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        fontFamily='SFProText-Regular'
+                                        color='GrayText'
+                                        textAlign='center'
+                                    >
+                                        {members} are members of this room
+                                    </Typography>
+                                    <Typography
+                                        variant='body2'
+                                        color='GrayText'
+                                        fontFamily='SFProText-Regular'
+                                        textAlign='center'
+                                    >
+                                        Before joining, make sure you have read our&nbsp;
+                                        <Link>
+                                            terms of service
+                                        </Link>
+                                        &nbsp;and agree to it
+                                    </Typography>
+                                </Stack>
                             </Stack>
                         </Stack>
                     </CardContent>

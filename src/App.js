@@ -69,6 +69,7 @@ function App() {
   }
 
   const onChatJoined = ({ room_code, username, public_key, onSuccess }) => {
+    console.log(process.env.REACT_APP_HOST)
     Socket.init(process.env.REACT_APP_HOST, {
       forceNew: false,
       query: {
